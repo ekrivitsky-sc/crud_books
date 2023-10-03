@@ -2,9 +2,6 @@ FROM php:8.3-rc-fpm
 
 ARG XDEBUG_VERSION=3.3.0alpha2
 
-# Copy composer.lock and composer.json
-#COPY composer.lock composer.json /var/www/html/
-
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -24,7 +21,6 @@ RUN apt-get update && apt-get install -y \
     libgd-dev
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-#Mine
 
 ARG WITH_XDEBUG=false
 
@@ -47,9 +43,6 @@ RUN groupadd -g 1001 www && useradd -u 1001 -ms /bin/bash -g www www
 
 # Change current user to www
 USER www
-
-# Set working directory
-#WORKDIR /var/www/html
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
