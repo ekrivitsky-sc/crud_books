@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    tty: true
+    ports:
+      - ${NGINX_PORT}:80
+    volumes:
+      - ./app:/var/www/html
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - php
+    networks:
+      - crud-books
+
+  php:
+    build:
+      context: ./docker/php
+      args:
+        - WITH_XDEBUG=${WITH_XDEBUG}
+    volumes:
+      - ./app:/var/www/html
+      - ./docker/php/config/php.ini:/usr/local/etc/php/conf.d/php.ini
+    environment:
+      XDEBUG_CONFIG: ${XDEBUG_CONFIG}
+      PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+    depends_on:
+      - db
+    networks:
+      - crud-books
+
+  db:
+    image: postgres:latest
+    ports:
+      - ${DB_PORT}:5432
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./docker/data/postgres:/var/lib/postgres/data/
+    networks:
+      - crud-books
+
+
+volumes:
+  db_data:
+
+networks:
+  crud-books:
+    driver: bridge
