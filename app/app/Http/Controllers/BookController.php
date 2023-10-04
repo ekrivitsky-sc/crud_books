@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Filters\BookFilter;
 use App\Http\Requests\Book\FilterRequest;
+use App\Http\Requests\Book\StoreImageRequest;
 use App\Http\Requests\Book\StoreRequest;
 use App\Http\Requests\Book\UpdateRequest;
 use App\Http\Resources\BookResource;
@@ -30,6 +31,7 @@ class BookController extends Controller
         $filter = app()->make(BookFilter::class, ['queryParams' => array_filter($data)]);
 
         $books = Book::with(request('with', []))
+            ->orderBy('id', 'desc')
             ->filter($filter)
             ->paginate($request->get('per_page'));
 
@@ -45,15 +47,6 @@ class BookController extends Controller
     public function store(StoreRequest $request): JsonResponse
     {
         $params = $request->all();
-
-        if($request->hasFile('image')){
-            $fileName = sprintf('%s.%s', time(), $request->image->extension());
-            $request->image->storeAs('public/books', $fileName);
-
-            $params['img_path'] = sprintf("/storage/books/%s", $fileName);
-
-            unset($params['image']);
-        }
 
         $book = new Book();
 
@@ -74,6 +67,27 @@ class BookController extends Controller
         return BookResource::make($item)
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
+    }
+
+    /**
+     * @param StoreImageRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function saveImage(StoreImageRequest $request): JsonResponse
+    {
+        $imageDir = env("IMAGE_DIR", "/storage/books");
+
+        if($request->hasFile('image')){
+            $fileName = sprintf('%s.%s', time(), $request->image->extension());
+            $request->image->storeAs('public/books', $fileName);
+
+            $imgPath = sprintf("%s/%s", $imageDir, $fileName);
+
+            return response()->json(['data' => ['url' => $imgPath]])->setStatusCode(Response::HTTP_CREATED);
+        }
+
+        return response()->json()->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -117,21 +131,10 @@ class BookController extends Controller
      */
     public function update($id, UpdateRequest $request): JsonResponse
     {
-        $params = $request->all();
-
-        if($request->hasFile('image')){
-            $fileName = time() . '.' . $request->image->extension();
-            $request->image->storeAs('public/books', $fileName);
-
-            $params['img_path'] = sprintf("/storage/books/%s", $fileName);
-
-            unset($params['image']);
-        }
-
         $book = Book::with(request('with', []))
             ->findOrFail($id);
 
-        $book->update($params);
+        $book->update($request->all());
 
         $authors = $request->get('authors');
         $book->authors()->sync($authors);
