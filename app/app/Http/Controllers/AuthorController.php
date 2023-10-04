@@ -30,6 +30,7 @@ class AuthorController extends Controller
         $filter = app()->make(AuthorFilter::class, ['queryParams' => array_filter($data)]);
 
         $author = Author::with(request('with', []))
+            ->orderBy('id', 'desc')
             ->filter($filter)
             ->paginate($request->get('per_page'));
 

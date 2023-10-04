@@ -25,11 +25,11 @@ Route::group(['prefix' => 'v1'], static function () {
         Route::post('/', [BookController::class, 'store']);
         Route::get('/', [BookController::class, 'index']);
         Route::get('/{id}', [BookController::class, 'show']);
-        Route::post('/{id}', [BookController::class, 'update']);
+        Route::put('/{id}', [BookController::class, 'update']);
         Route::delete('/{id}', [BookController::class, 'destroy']);
+        Route::post('/image', [BookController::class, 'saveImage']);
     });
 
-//    Route::apiResource('books', BookController::class);
     Route::apiResource('authors', AuthorController::class);
     Route::apiResource('tags', TagController::class);
 });

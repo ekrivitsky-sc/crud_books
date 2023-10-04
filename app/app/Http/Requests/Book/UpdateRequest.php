@@ -22,7 +22,7 @@ class UpdateRequest extends FormRequest
                 })
             ],
             'year' => ['required', 'integer', 'digits:4'],
-            'image' => ['image', 'nullable'],
+            'img_path' => ['string', 'nullable'],
             'authors' => ['array'],
             'authors.*' => ['exists:authors,id'],
             'tags' => ['array'],

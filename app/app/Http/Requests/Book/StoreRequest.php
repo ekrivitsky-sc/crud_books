@@ -18,7 +18,7 @@ class StoreRequest extends FormRequest
         return [
             'name' => ['required', 'max:255', Rule::unique(Book::class, 'name')],
             'year' => ['required', 'integer', 'digits:4'],
-            'image' => ['image', 'nullable'],
+            'img_path' => ['string', 'nullable'],
             'authors' => ['required', 'array'],
             'authors.*' => ['required', 'exists:authors,id'],
             'tags' => ['array'],

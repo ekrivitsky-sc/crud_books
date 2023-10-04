@@ -30,6 +30,7 @@ class TagController extends Controller
         $filter = app()->make(TagFilter::class, ['queryParams' => array_filter($data)]);
 
         $books = Tag::with(request('with', []))
+            ->orderBy('id', 'desc')
             ->filter($filter)
             ->paginate($request->get('per_page'));
 
