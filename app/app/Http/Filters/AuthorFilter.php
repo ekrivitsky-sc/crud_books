@@ -6,25 +6,19 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AuthorFilter extends AbstractFilter
 {
-    public const LNAME = 'lname';
-    public const FNAME = 'fname';
+    public const NAME = 'name';
 
 
     protected function getCallbacks(): array
     {
         return [
-            self::FNAME => [$this, 'firstName'],
-            self::LNAME => [$this, 'lastName'],
+            self::NAME => [$this, 'name'],
         ];
     }
 
-    public function firstName(Builder $builder, $value)
+    public function name(Builder $builder, $value)
     {
-        $builder->where('fname', 'like', "%$value%");
-    }
-
-    public function lastName(Builder $builder, $value)
-    {
-        $builder->where('lname', 'like', "%$value%");
+        $builder->where('fname', 'ILIKE', "%$value%");
+        $builder->orWhere('lname', 'ILIKE', "%$value%");
     }
 }

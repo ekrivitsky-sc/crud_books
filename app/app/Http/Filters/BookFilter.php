@@ -9,10 +9,8 @@ class BookFilter extends AbstractFilter
 {
     public const NAME = 'name';
     public const YEAR = 'year';
-    public const AUTHOR_LNAME = 'author_lname';
-    public const AUTHOR_FNAME = 'author_fname';
-    public const TAG_NAME = 'tag_name';
-    public const AUTHOR_ID = 'author_id';
+    public const TAGS = 'tags';
+    public const AUTHORS = 'authors';
 
 
     protected function getCallbacks(): array
@@ -20,10 +18,8 @@ class BookFilter extends AbstractFilter
         return [
             self::NAME => [$this, 'name'],
             self::YEAR => [$this, 'year'],
-            self::AUTHOR_LNAME => [$this, 'authorLname'],
-            self::AUTHOR_FNAME => [$this, 'authorFname'],
-            self::TAG_NAME => [$this, 'tagName'],
-            self::AUTHOR_ID => [$this, 'authorId'],
+            self::TAGS => [$this, 'tags'],
+            self::AUTHORS => [$this, 'authors'],
         ];
     }
 
@@ -37,31 +33,17 @@ class BookFilter extends AbstractFilter
         $builder->where('year', '=', $value);
     }
 
-    public function authorId(Builder $builder, $value)
+    public function authors(Builder $builder, $value)
     {
         $builder->whereHas('authors', static function ($builder) use ($value) {
-            $builder->where('authors.id', '=', $value);
+            $builder->whereIn('authors.id', $value);
         });
     }
 
-    public function authorLname(Builder $builder, $value)
-    {
-        $builder->whereHas('authors', static function ($builder) use ($value) {
-            $builder->where('authors.lname', 'like', "%$value%");
-        });
-    }
-
-    public function authorFname(Builder $builder, $value)
-    {
-        $builder->whereHas('authors', static function ($builder) use ($value) {
-            $builder->where('authors.fname', 'like', "%$value%");
-        });
-    }
-
-    public function tagName(Builder $builder, $value)
+    public function tags(Builder $builder, $value)
     {
         $builder->whereHas('tags', static function ($builder) use ($value) {
-            $builder->where('tags.name', 'like', "%$value%");
+            $builder->whereIn('tags.id', $value);
         });
     }
 }
