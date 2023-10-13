@@ -16,10 +16,10 @@ class FilterRequest extends FormRequest
         return [
             'name' => ['string'],
             'year' => ['integer', 'digits:4'],
-            'author_id' => ['string'],
-            'author_lname' => ['string'],
-            'author_fname' => ['string'],
-            'tag_name' => ['string'],
+            'authors' => ['array'],
+            'authors.*' => ['integer', 'exists:authors,id'],
+            'tags' => ['array'],
+            'tags.*' => ['integer', 'exists:tags,id'],
         ];
     }
 }

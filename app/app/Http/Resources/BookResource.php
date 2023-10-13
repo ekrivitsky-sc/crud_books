@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,11 +17,12 @@ class BookResource extends JsonResource
     public function toArray(Request $request): array
     {
         $requestWith = $request->with ?? [];
+        $host = env("HOST", "");
 
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'image' => $this->img_path,
+            'img_path' => $this->img_path ? $host.$this->img_path : $host.'/no_image.jpg',
             'year' => $this->year,
             $this->mergeWhen(in_array('authors', $requestWith), [
                 'authors' => AuthorResource::collection($this->authors),

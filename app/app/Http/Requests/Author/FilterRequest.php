@@ -14,8 +14,7 @@ class FilterRequest extends FormRequest
     public function rules()
     {
         return [
-            'lname' => ['string'],
-            'fname' => ['string'],
+            'name' => ['string'],
         ];
     }
 }
